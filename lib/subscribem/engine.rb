@@ -1,5 +1,12 @@
+require "warden"
+
+
 module Subscribem
   class Engine < ::Rails::Engine
+    initializer "subscribem.middleware.warden" do
+      Rails.application.config.middleware.use Warden::Manager
+    end
+
     isolate_namespace Subscribem
 
     config.generators do |g|
