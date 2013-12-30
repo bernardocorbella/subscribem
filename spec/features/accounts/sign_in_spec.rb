@@ -1,7 +1,7 @@
 require "spec_helper"
 feature "User sign in" do
   extend SubdomainHelpers
-  let!(:account) { create(:account) }
+  let!(:account) { create(:account_with_schema) }
   let(:sign_in_url) { "http://#{account.subdomain}.example.com/sign_in"}
   let(:root_url) { "http://#{account.subdomain}.example.com/"}
   within_account_subdomain do

@@ -32,7 +32,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
@@ -46,8 +46,9 @@ RSpec.configure do |config|
   config.order = "random"
 
   #Database Cleaner
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
+  config.before(:all) do
+    DatabaseCleaner.strategy = :truncation,
+      {pre_count: true, reset_ids: true}
     DatabaseCleaner.clean_with(:truncation)
   end
 
@@ -56,6 +57,16 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
+    Apartment::Database.reset
     DatabaseCleaner.clean
+
+    connection = ActiveRecord::Base.connection.raw_connection
+    schemas = connection.query(%Q{SELECT 'drop schema ' || nspname || ' cascade;'from pg_namespace where nspname != 'public' AND nspname NOT LIKE 'pg_%' AND nspname != 'information_schema';})
+    schemas.each do |query|
+      connection.query(query.values.first)
+    end
   end
+
+  Capybara.app_host = "http://example.com"
 end
+
