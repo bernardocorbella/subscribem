@@ -1,6 +1,6 @@
 require "spec_helper"
 feature "User signup" do
-  let!(:account) { create(:account_with_schema) }
+  let!(:account) { create(:account) }
   let(:root_url) { "http://#{account.subdomain}.example.com/" }
 
   scenario "under an account" do
